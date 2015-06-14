@@ -2,15 +2,17 @@ package com.example.quvo.shudenkun;
 
 import android.text.format.Time;
 
+import java.util.Date;
+
 /**
  * Created by shikichi_takuya on 15/06/13.
  */
 public class LastRoute {
     private String depature;
     private String destination;
-    private String depatureAt;
+    private Date depatureAt;
 
-    public LastRoute(String depature, String destination, String depatureAt) {
+    public LastRoute(String depature, String destination, Date depatureAt) {
         this.depature = depature;
         this.destination = destination;
         this.depatureAt = depatureAt;
@@ -32,11 +34,8 @@ public class LastRoute {
         this.destination = destination;
     }
 
-    public String getDepatureAt() {
+    public Date getDepatureAt() {
         return depatureAt;
     }
 
-    public void setDepatureAt(String depatureAt) {
-        this.depatureAt = depatureAt;
-    }
 }

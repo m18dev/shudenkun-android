@@ -1,5 +1,8 @@
 package com.example.quvo.shudenkun;
 
+import android.app.Activity;
+import android.net.Uri;
+import android.os.AsyncTask;
 import android.util.Log;
 
 import org.apache.http.HttpEntity;
@@ -8,7 +11,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -20,14 +23,32 @@ import java.util.ArrayList;
 /**
  * Created by shikichi_takuya on 15/03/22.
  */
-public class JsonManager {
-    public static ArrayList<JSONObject> jsonObjects(String url)
+public class JsonManager extends AsyncTask<Uri.Builder, Void, String> {
+    private Activity mainActivity;
+    private String url;
+    private JSONObject jsonObject;
+
+    public JsonManager(String url) {
+        // 呼び出し元のアクティビティ
+        this.url = url;
+    }
+    @Override
+    protected String doInBackground(Uri.Builder... builder){
+        jsonObject = jsonObject(url);
+        return null;
+    }
+    @Override
+    protected void onPostExecute(String result) {
+        // 取得した結果をテキストビューに入れちゃったり
+    }
+    private JSONObject jsonObject(String url)
     {
         ArrayList<JSONObject> jsonObjects = new ArrayList<JSONObject>();
 
         StringBuilder builder = new StringBuilder();
         HttpClient client = new DefaultHttpClient();
 
+        Log.d("url!!!!:",url);
         HttpGet httpGet = new HttpGet(url);
         try {
             HttpResponse response = client.execute(httpGet);
@@ -38,7 +59,6 @@ public class JsonManager {
                 BufferedReader reader = new BufferedReader(new InputStreamReader(content));
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    Log.d("line",line);
                     builder.append(line);
                 }
             } else {
@@ -52,20 +72,17 @@ public class JsonManager {
 
         String jsonData = builder.toString();
         Log.d("json",jsonData);
-        try {
 
-            JSONArray jsonArray = new JSONArray(builder.toString());
-            System.out.println("Number of entries " + jsonArray.length());
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                jsonObjects.add(jsonObject);
-            }
-            return jsonObjects;
-        } catch (Exception e) {
-            e.printStackTrace();
+        try {
+            return new JSONObject(jsonData);
+        }catch(JSONException e){
+            Log.e("JsonManager",e.toString());
+            return null;
         }
-        Log.e("JsonManager","you cant get Json object, url:" + url);
-        return null;
+    }
+
+    public JSONObject getJsonObject(){
+       return jsonObject;
     }
 }
 
